@@ -14,8 +14,10 @@ module.exports = {
       var path   = atom.config.get('perltidy.binary');
 
       if (fs.existsSync(path)) {
+        var position = editor.getCursorScreenPosition();
         perlTidy(path, editor.getText(), function (perl) {
           editor.setText(perl);
+          editor.getCursor().setScreenPosition(position);
         });
       }
 
