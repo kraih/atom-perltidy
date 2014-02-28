@@ -20,7 +20,7 @@ module.exports = {
       }
 
       else {
-        console.error('No Perltidy found at "' + path + '".');
+        editor.setText('No Perltidy found at "' + path + '".');
       }
     });
   }
