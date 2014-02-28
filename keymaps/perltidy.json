@@ -1,0 +1,5 @@
+{
+  ".editor": {
+    "alt-p": "perltidy:tidy"
+  }
+}
