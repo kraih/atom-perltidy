@@ -16,8 +16,10 @@ module.exports = {
       if (fs.existsSync(path)) {
         var position = editor.getCursorScreenPosition();
         perlTidy(path, editor.getText(), function (perl) {
-          editor.setText(perl);
-          editor.getCursor().setScreenPosition(position);
+          editor.transact(function() {
+            editor.setText(perl);
+            editor.getCursor().setScreenPosition(position);
+          });
         });
       }
 
