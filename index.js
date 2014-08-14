@@ -2,9 +2,11 @@ var fs    = require('fs'),
     spawn = require('child_process').spawn;
 
 module.exports = {
+  disposables: [],
 
   configDefaults: {
-    binary: "/usr/local/bin/perltidy"
+    binary: "/usr/local/bin/perltidy",
+    tidyOnSave: false,
   },
 
   activate: function() {
@@ -27,7 +29,19 @@ module.exports = {
         editor.setText('No Perltidy found at "' + path + '".');
       }
     });
-  }
+
+    var _this = this;
+    var subscription = atom.workspace.observeTextEditors( function (editor) {
+        _this.disposables.push(editor.onDidSave(onSave(editor)));
+    });
+    this.disposables.push(subscription);
+  },
+
+  deactivate: function () {
+    for( var i=0; i<this.disposables.length; i++) {
+      this.disposables[i].dispose();
+    }
+  },
 };
 
 function perlTidy(path, before, cb) {
@@ -43,4 +57,27 @@ function perlTidy(path, before, cb) {
   perltidy.stdout.on('data', function(chunk) {
     after += chunk;
   });
+}
+
+function onSave(editor) {
+  return function(event) {
+    if (!atom.config.get('perltidy.tidyOnSave')) return;
+
+    var grammar = editor.getGrammar();
+    if (!grammar) return;
+    if (grammar.scopeName != 'source.perl') return;
+
+    var binary = atom.config.get('perltidy.binary');
+    var file = event.path;
+    var perltidy = spawn(binary, ['-b', '-bext=/', file]);
+    stderr = ''
+    perltidy.stderr.on('data', function (data) {
+      stderr += data
+    });
+    perltidy.on('close', function (code) {
+      if (code == 0) return;
+      console.log('stderr: ' + stderr);
+      console.log('child process exited with code ' + code);
+    });
+  }
 }
