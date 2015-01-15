@@ -8,9 +8,9 @@ module.exports = {
   },
 
   activate: function() {
-    atom.workspaceView.command('perltidy:tidy', function() {
+    atom.commands.add('atom-workspace', 'perltidy:tidy', function() {
 
-      var editor = atom.workspaceView.getActiveView().editor;
+      var editor = atom.workspace.getActiveTextEditor();
       var path   = atom.config.get('perltidy.binary');
 
       if (fs.existsSync(path)) {
