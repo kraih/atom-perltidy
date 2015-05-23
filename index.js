@@ -3,8 +3,11 @@ var fs    = require('fs'),
 
 module.exports = {
 
-  configDefaults: {
-    binary: "/usr/local/bin/perltidy"
+  config: {
+    binary: {
+      type: "string",
+      default: "/usr/local/bin/perltidy"
+    }
   },
 
   activate: function() {
