@@ -21,7 +21,7 @@ module.exports = {
         perlTidy(path, editor.getText(), function (perl) {
           editor.transact(function() {
             editor.setText(perl);
-            editor.getCursor().setScreenPosition(position);
+            editor.getLastCursor().setScreenPosition(position);
           });
         });
       }
