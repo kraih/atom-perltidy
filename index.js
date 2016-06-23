@@ -37,7 +37,7 @@ module.exports = {
       }
 
       else {
-        editor.setText('No Perltidy found at "' + path + '".');
+        editor.setText('No Perltidy found at "' + binary + '".');
       }
     });
   }
@@ -46,7 +46,7 @@ module.exports = {
 function perlTidy(binary, cwd, options, before, cb) {
 
   var after = '';
-  var perltidy = spawn(binary, options, { cwd: cwd, stdio: 'pipe' });
+  var perltidy = spawn(binary, options, {cwd: cwd, stdio: 'pipe'});
   perltidy.stdin.setEncoding  = 'utf-8';
   perltidy.stdout.setEncoding = 'utf-8';
   perltidy.stdin.end(before);
