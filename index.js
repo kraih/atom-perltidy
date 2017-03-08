@@ -26,11 +26,20 @@ module.exports = {
       var binary  = atom.config.get('perltidy.binary');
       var options = atom.config.get('perltidy.options');
 
+      var selection = editor.getSelectedText();
+      var hasSelection = selection !== '';
+      var editorText = hasSelection ? selection : editor.getText();
+
       if (fs.existsSync(binary)) {
         var position = editor.getCursorScreenPosition();
-        perlTidy(binary, cwd, options, editor.getText(), function (perl) {
+        perlTidy(binary, cwd, options, editorText, function (perl) {
           editor.transact(function() {
-            editor.setText(perl);
+            if (hasSelection) {
+              editor.insertText(perl);
+            }
+            else {
+              editor.setText(perl);
+            }
             editor.getLastCursor().setScreenPosition(position);
           });
         });
