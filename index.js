@@ -1,13 +1,25 @@
 var fs    = require('fs'),
     path  = require('path'),
-    spawn = require('child_process').spawn;
+    spawn = require('child_process').spawn,
+    env   = require('process').env;
 
 module.exports = {
 
   config: {
     binary: {
       type: "string",
-      default: "/usr/local/bin/perltidy"
+      default: "perltidy"
+    },
+    directories: {
+        type: "array",
+        default: env['PATH'].split(':')
+                            .filter( dir => { return dir.match(/perl5/) } )
+                            .concat([ '/usr/local/bin' ])
+                            .sort()
+                            .filter( function(el,i,a) { return i === a.indexOf(el) } ), // remove duplicates
+        items: {
+            type: "string"
+        }
     },
     options: {
       type: "array",
@@ -26,13 +38,18 @@ module.exports = {
       var binary  = atom.config.get('perltidy.binary');
       var options = atom.config.get('perltidy.options');
 
+      var directories = atom.config.get('perltidy.directories');
+      var actualBinary = directories
+            .map( dir => { return `${dir}/${binary}` } )
+            .find( bin => { return fs.existsSync(bin) } );
+
       var selection = editor.getSelectedText();
       var hasSelection = selection !== '';
       var editorText = hasSelection ? selection : editor.getText();
 
-      if (fs.existsSync(binary)) {
+      if (actualBinary) {
         var position = editor.getCursorScreenPosition();
-        perlTidy(binary, cwd, options, editorText, function (perl) {
+        perlTidy(actualBinary, cwd, options, editorText, function (perl) {
           editor.transact(function() {
             if (hasSelection) {
               editor.insertText(perl);
@@ -46,7 +63,7 @@ module.exports = {
       }
 
       else {
-        editor.setText('No Perltidy found at "' + binary + '".');
+        editor.setText(`No "${binary}" found in PATH (${ directories.join(' ') }).`);
       }
     });
   }
