@@ -1,6 +1,8 @@
 # Perltidy
 
-Perltidy for Atom.
+Run perltidy with `alt-p`.
 
-Started with `alt-p`, you may need to configure the location of your
-`perltidy` binary, which defaults to `/usr/local/bin/perltidy`.
+## Settings
+
+If your `perltidy` is installed in a non-standard location, you may have
+to adjust the directories.
